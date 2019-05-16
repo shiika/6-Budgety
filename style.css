@@ -187,7 +187,7 @@ body {
     margin-right: 50px;
 }
 
-.expenses {
+.expense {
     float: left;
     width: 475px;
 }
@@ -236,9 +236,9 @@ h2 {
     color: #28B9B5;
 }
 
-.expenses .item__value,
-.expenses .item__percentage,
-.expenses .item__delete--btn {
+.expense .item__value,
+.expense .item__percentage,
+.expense .item__delete--btn {
     color: #FF5049;
 }
 
