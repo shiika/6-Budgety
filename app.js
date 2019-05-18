@@ -66,6 +66,10 @@ var budgetController = (function() {
                 return (expense.value / data.totals["exp"]) * 100;
             });
 
+            data.allItem["exp"].forEach(function(item, i) {
+                item.percentage = percentages[i];
+            })
+
             return percentages
         },
 
@@ -108,6 +112,7 @@ var UIController = (function() {
 
     var UIComponents = {
         // Input Fields
+        addContainer: document.querySelector(".add__container"),
         inputBtn: document.querySelector(".add__btn"),
         descField: document.querySelector(".add__description"),
         valueField: document.querySelector(".add__value"),
@@ -123,7 +128,10 @@ var UIController = (function() {
         totalIncomes: document.querySelector(".budget__income--value"),
         totalExpenses: document.querySelector(".budget__expenses--value"),
         totalPercentage: document.querySelector(".budget__expenses--percentage"),
-        inputFields: document.querySelectorAll("input")
+        inputFields: document.querySelectorAll("input"),
+
+        // Date month
+        monthElement: document.querySelector(".budget__title--month")
     };
 
     var numberWithCommas = function(number) {
@@ -146,6 +154,14 @@ var UIController = (function() {
                     type: UIComponents["typeField"].value
                 }
                 
+        },
+
+        changeUI: function(e) {
+            var container = UIComponents["addContainer"];
+            container.querySelectorAll("input, select").forEach(function(item) {
+                item.classList.toggle("red-focus");
+            });
+            container.querySelector(".add__btn").classList.toggle("red");
         },
 
         displayItem: function(item) {
@@ -212,8 +228,18 @@ var controller = (function(budgetCtrl, UICtrl) {
         // Deleting an item event handler
         DOM["container"].addEventListener("click", ctrlDeleteItem);
 
+        // Change type event handler
+        DOM["typeField"].addEventListener("change", UICtrl.changeUI);
+
     }
     var DOM = UICtrl.getUIComponents();
+
+    var displayDate = function() {
+        var now = new Date();
+        var monthsName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        var month = monthsName[now.getMonth()];
+        DOM["monthElement"].innerHTML = month;
+    };
 
     var updateBudget = function(type) {
 
@@ -287,13 +313,17 @@ var controller = (function(budgetCtrl, UICtrl) {
         UICtrl.removeItem(type, id);
 
         // 3. Update budget
-        updateBudget(type)
+        updateBudget(type);
+
+        // 4.update percentages
+        updatePercentages();
         
         
     }
 
     return {
         init: function() {
+            displayDate();
             UICtrl.displayBudget(budgetCtrl.getBudget());
             setupEventHandlers()
         }
