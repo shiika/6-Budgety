@@ -61,12 +61,12 @@ var budgetController = (function() {
             }
         },
 
-        calculatePercentages: function(expenses) {
-            var percentages = expenses.map(function(expense) {
-                return (expense.value / data.totals["exp"]) * 100;
+        calculatePercentages: function(items, type) {
+            var percentages = items.map(function(item) {
+                return (item.value / data.totals[type]) * 100;
             });
 
-            data.allItem["exp"].forEach(function(item, i) {
+            data.allItem[type].forEach(function(item, i) {
                 item.percentage = percentages[i];
             })
 
@@ -86,8 +86,8 @@ var budgetController = (function() {
             return data.allItem[type]
         },
 
-        getExpenses: function() {
-            return data.allItem["exp"];
+        getItems: function(type) {
+            return data.allItem[type];
         },
 
         getBudget: function() {
@@ -197,9 +197,9 @@ var UIController = (function() {
             UIComponents["totalPercentage"].innerHTML = `${data.percentage}%`;
         },
 
-        displayPercentages: function(newExpenses) {
-            newExpenses.forEach(function(item, index) {
-                var itemContainer = UIComponents["expenseItems"].querySelectorAll(".item");
+        displayPercentages: function(newItems, type) {
+            newItems.forEach(function(item, index) {
+                var itemContainer = UIComponents[type === "inc" ? "incomeItems" : "expenseItems"].querySelectorAll(".item");
 
                 itemContainer[index].querySelector(".item__percentage").innerHTML = `${parseInt(item).toString()}%`;
 
@@ -254,17 +254,17 @@ var controller = (function(budgetCtrl, UICtrl) {
 
     };
 
-    var updatePercentages = function() {
+    var updatePercentages = function(type) {
         // get expenses
-        var expenses = budgetCtrl.getExpenses();
+        var items = budgetCtrl.getItems(type);
 
 
-        // 1. Calculate expenses percetnages and update budget
-        var newExpenses = budgetCtrl.calculatePercentages(expenses);
+        // 1. Calculate items percetnages and update budget
+        var newItems = budgetCtrl.calculatePercentages(items, type);
 
 
-        // 2. update expenses percentages on UI
-        UICtrl.displayPercentages(newExpenses);
+        // 2. update items percentages on UI
+        UICtrl.displayPercentages(newItems, type);
 
         
     };
@@ -288,7 +288,7 @@ var controller = (function(budgetCtrl, UICtrl) {
                 updateBudget(input.type);
 
                 // 5. Update expenses percentages
-                updatePercentages();
+                updatePercentages(input.type);
                 
 
                 // 6. Clear Input Fields
@@ -316,7 +316,7 @@ var controller = (function(budgetCtrl, UICtrl) {
         updateBudget(type);
 
         // 4.update percentages
-        updatePercentages();
+        updatePercentages(type);
         
         
     }
