@@ -20,11 +20,9 @@ var budgetController = (function() {
     };
 
     var calculateTotals = function(type) {
-        data.totals[type] = data.allItem[type].reduce(function(total, item, index) {
+        data.totals[type] = data.allItem[type].reduce(function(total, item) {
             return total + item.value 
         }, 0);
-
-        return data.totals[type]
     }
 
     var data = {
@@ -45,8 +43,8 @@ var budgetController = (function() {
     return {
         addItem: function(input) {
                 var id = data.allItem[input.type].length === 0 ? 0 : data.allItem[input.type][data.allItem[input.type].length -1].id + 1; 
-                if (input.type === "inc") { var item = new Income(id, input.desc, input.value) }
-                else if (input.type === "exp") { var item = new Expense(id, input.desc, input.value) }
+                if (input.type === "inc") { var item = new Income(id, input.desc, parseFloat(input.value.toFixed(2))) }
+                else if (input.type === "exp") { var item = new Expense(id, input.desc, parseFloat(input.value.toFixed(2))) }
                 data["allItem"][input.type].push(item);
                 // item.percentage = (item.value / data.totals[input.type]) * 100;
                 return item;
@@ -60,7 +58,6 @@ var budgetController = (function() {
 
             if (data.totals["inc"] > data.totals["exp"]) {
                 data.percentage = Math.round((data.totals["exp"] / data.totals["inc"]) * 100);
-
             }
         },
 
