@@ -12,12 +12,20 @@ var budgetController = (() => {
         this.percentage = percentage
     }
 
+    Expense.prototype.calculatePercentage = function() {
+        this.percentage = Math.round((this.value / data.totals["exp"]) * 100);
+    }
+
     var Income = function(id, desc, value, percentage = 0) {
         this.id = id;
         this.desc = desc;
         this.value = value;
         this.percentage = percentage
     };
+
+    Income.prototype.calculatePercentage = function() {
+        this.percentage = Math.round((this.value / data.totals["inc"]) * 100);
+    }
 
     var calculateTotals = type => {
         data.totals[type] = data.allItem[type].reduce((total, item) => {
@@ -61,16 +69,12 @@ var budgetController = (() => {
             }
         },
 
-        calculatePercentages: (items, type) => {
-            var percentages = items.map(item => {
-                return (item.value / data.totals[type]) * 100;
-            });
+        calculatePercentages: type => {
 
-            data.allItem[type].forEach((item, i) => {
-                item.percentage = percentages[i];
-            })
+            data.allItem[type].forEach(item => item.calculatePercentage());
 
-            return percentages
+            return data.allItem[type].map(item => item.percentage)
+
         },
 
         deleteItem: function(type, id) {
@@ -197,8 +201,8 @@ var UIController = (() => {
             UIComponents["totalPercentage"].innerHTML = `${data.percentage}%`;
         },
 
-        displayPercentages: (newItems, type) => {
-            newItems.forEach((item, index) => {
+        displayPercentages: (percentages, type) => {
+            percentages.forEach((item, index) => {
                 var itemContainer = UIComponents[type === "inc" ? "incomeItems" : "expenseItems"].querySelectorAll(".item");
 
                 itemContainer[index].querySelector(".item__percentage").innerHTML = `${parseInt(item).toString()}%`;
@@ -255,17 +259,12 @@ var controller = ((budgetCtrl, UICtrl) => {
     };
 
     var updatePercentages = type => {
-        // get expenses
-        var items = budgetCtrl.getItems(type);
-
 
         // 1. Calculate items percetnages and update budget
-        var newItems = budgetCtrl.calculatePercentages(items, type);
-
+        var percentages = budgetCtrl.calculatePercentages(type);
 
         // 2. update items percentages on UI
-        UICtrl.displayPercentages(newItems, type);
-
+        UICtrl.displayPercentages(percentages, type);
         
     };
 
