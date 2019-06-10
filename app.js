@@ -4,27 +4,28 @@
 // 1.Control data structures of our budget
 // 2.Calculate our incomes, expenses and overall budget
 var budgetController = (() => {
-    
-    var Expense = function(id, desc, value, percentage = 0) {
-        this.id = id;
-        this.desc = desc;
-        this.value = value;
-        this.percentage = percentage
+
+    class Expense {
+        constructor(id, desc, value, percentage = 0) {
+            this.id = id;
+            this.desc = desc;
+            this.value = value;
+            this.percentage = percentage
+        }
+
+        calculatePercentage() {
+            this.percentage = Math.round((this.value / data.totals["exp"]) * 100);
+        }
     }
 
-    Expense.prototype.calculatePercentage = function() {
-        this.percentage = Math.round((this.value / data.totals["exp"]) * 100);
-    }
+    class Income extends Expense {
+        constructor(id, desc, value, percentage = 0) {
+            super(id, desc, value, percentage)
+        }
 
-    var Income = function(id, desc, value, percentage = 0) {
-        this.id = id;
-        this.desc = desc;
-        this.value = value;
-        this.percentage = percentage
-    };
-
-    Income.prototype.calculatePercentage = function() {
-        this.percentage = Math.round((this.value / data.totals["inc"]) * 100);
+        calculatePercentage() {
+            this.percentage = Math.round((this.value / data.totals["inc"]) * 100);
+        }
     }
 
     var calculateTotals = type => {
